@@ -2,15 +2,15 @@
 
     console.log("ALARM!!!");
     const config = {
-        dotMinRad: 20,
-        dotMaxRad: 40,
+        dotMinRad: 10,
+        dotMaxRad: 50,
         massFactor: 0.002,
         defColor : 'rgba(150,255,255,0.9)',
-        colorSwap: 1000,
+        colorSwap: 400,
         smooth : 0.05,
         sphereRad : 350,
-        bigDotRad : 80,
-        mouseSize : 120
+        bigDotRad : 100,
+        mouseSize : 80
     }
     
     const TWO_PI = 2 * Math.PI;
@@ -27,15 +27,38 @@
             this.rad = r || random(config.dotMinRad,config.dotMaxRad);
             this.mass = this.rad * config.massFactor;
 
-            this.red = red;
-            this.green = green;
-            this.blue = blue;
+            this.defRed = this.red = red;
+            this.defGreen = this.green = green;
+            this.defBlue = this.blue = blue;
             this.color = 'rgba('+red+','+green+','+blue+','+'0.9)' || config.defColor;
             
+        }
+        restoration()
+        {
+            let multiSlower = 5/config.colorSwap;
+            if(this.defRed > this.red+multiSlower){
+                this.red += multiSlower;
+            }
+            if(this.defRed < this.red-multiSlower){
+                this.red -= multiSlower;
+            }
+            if(this.defGreen > this.green+multiSlower){
+                this.green += multiSlower;
+            }
+            if(this.defGreen < this.green-multiSlower){
+                this.green -= multiSlower;
+            }
+            if(this.defBlue > this.blue+multiSlower){
+                this.blue += multiSlower;
+            }
+            if(this.defBlue < this.blue-multiSlower){
+                this.blue -= multiSlower;
+            }
         }
         update()
         {
             this.color = 'rgba('+this.red+','+this.green+','+this.blue+','+'0.9)' || config.defColor;
+            this.restoration();
         }
         isMove()
         {
@@ -62,7 +85,7 @@
 
                 let delta = {x: b.pos.x - a.pos.x, y: b.pos.y - a.pos.y}
                 let dist = Math.sqrt(delta.x * delta.x + delta.y * delta.y) || 1;
-                if(dist > (a.rad+b.rad)*7)
+                if(dist > (a.rad+b.rad)*3)
                 {
                     continue;
                 }
@@ -71,21 +94,26 @@
 
                     if(a.red>b.red){
                         let diff=a.red-b.red;
-                        b.red+=diff/config.colorSwap;                      
+                        //b.red+=diff/config.colorSwap;
+                        a.red-=diff/config.colorSwap;                      
                     }
                     if(a.green>b.green)
                     {
                         let diff=a.green-b.green;
-                        b.green+=diff/config.colorSwap;
+                        //b.green+=diff/config.colorSwap;
+                        a.green-=diff/config.colorSwap;
                     }
                     if(a.blue>b.blue)
                     {
                         let diff=a.blue-b.blue;
-                        b.blue+=diff/config.colorSwap;
+                        //b.blue+=diff/config.colorSwap;
+                        a.blue-=diff/config.colorSwap;
                     }
 
-                    b.update();                    
+                                       
                 }
+                b.update(); 
+                a.update();
 
                 let gravity = a.mass+b.mass / dist*dist;
                 let cf = colorDifference(a,b); if(cf==0) cf = 1;
@@ -98,10 +126,16 @@
 
                 if(j==0){
                     if(dist < config.mouseSize)
-                    force = (dist - config.mouseSize)*b.mass;
+                    {
+                    force = -(dist - config.mouseSize)*b.mass*a.mass;
+                    }
+                    if(dist < config.mouseSize*2)
+                    {
+                        if(mouse.down) force = (dist/2-config.mouseSize)*b.mass*a.mass;
+                    }
                     else force = 0;
                 }
-
+                
                 acc.x += delta.x * force;
                 acc.y += delta.y * force;
             }
@@ -144,7 +178,7 @@
         
         dots.push(new Dot(0,0,0, config.bigDotRad));
         dots.push(new Dot(255,random(0,255),random(0,255)));
-        for(i = 0; i < 122 ; i++) { 
+        for(i = 0; i < 99 ; i++) { 
             dots.push(new Dot(random(0,255),random(0,255),random(0,255))); 
         }
     }

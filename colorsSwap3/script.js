@@ -3,14 +3,15 @@
     console.log("ALARM!!!");
     const config = {
         dotMinRad: 1,
-        dotMaxRad: 9,
+        dotMaxRad: 12,
         massFactor: 0.002,
         defColor : 'rgba(150,255,255,0.9)',
-        colorSwap: 200,
+        colorSwapSlower: 800,
         smooth : 0.05,
         sphereRad : 350,
         bigDotRad : 80,
-        mouseSize : 140
+        mouseSize : 140,
+        maxDots : 555
     }
     
     const TWO_PI = 2 * Math.PI;
@@ -18,7 +19,7 @@
     const context = canvas.getContext("2d");
 
     let w,h,mouse,dots;
-    let once = 1;
+    let dotsCount = 1;
 
     class Dot {
         constructor(red,green,blue,constRed,constGreen,constBlue){
@@ -40,7 +41,7 @@
         
         restoration()
         {
-            let multiSlower = 1/config.colorSwap;
+            let multiSlower = 10/config.colorSwapSlower;
             if(this.defRed > this.red+multiSlower){
                 this.red += multiSlower;
             }
@@ -90,44 +91,26 @@
 
                 let delta = {x: b.pos.x - a.pos.x, y: b.pos.y - a.pos.y}
                 let dist = Math.sqrt(delta.x * delta.x + delta.y * delta.y) || 1;
-                if(dist > (a.rad+b.rad)*8)
+                if(dist > (a.rad+b.rad)*7)
                 {
                     continue;
                 }
                 
                 if(a.isMove() && dist < (a.rad+b.rad)){
-
-                    if(a.red>b.red){
-                        let diff=a.red-b.red;
-                        if(!b.constRed)
-                        b.red+=diff/config.colorSwap;
-                        if(!a.constRed) 
-                        {
-                            //a.red-=diff/config.colorSwap; 
-                        }
-                                             
+                    let multiSlower = 1000/config.colorSwapSlower
+                    if(a.red>b.red + multiSlower){
+                        b.red+=multiSlower;
+                        //a.red-=multiSlower;                       
                     }
-                    if(a.green>b.green)
+                    if(a.green>b.green + multiSlower)
                     {
-                        let diff=a.green-b.green;
-                        if(!b.constGreen) 
-                        b.green+=diff/config.colorSwap;
-                        if(!a.constGreen)
-                        {
-                            //a.green-=diff/config.colorSwap; 
-                        } 
-                        
+                        b.green+=multiSlower;
+                        //a.green-=multiSlower;   
                     }
-                    if(a.blue>b.blue)
+                    if(a.blue>b.blue + multiSlower)
                     {
-                        let diff=a.blue-b.blue;
-                        if(!b.constBlue) 
-                        b.blue+=diff/config.colorSwap;
-                        if(!a.constBlue) 
-                        {
-                            //a.blue-=diff/config.colorSwap; 
-                        }
-                        
+                        b.blue+=multiSlower;  
+                        //a.blue-=multiSlower;                     
                     }
                   
                 }
@@ -206,16 +189,16 @@
         //dots.push(new Dot(0,255,0,1,1,1));
         //dots.push(new Dot(0,0,255,1,1,1));
         
-        for(i = 0, t = 0; i < 9; i++) { 
+        for(i = 0, t = 0; i < 0; i++) { 
             if(t>=3) t = 0;
             
-            if(t==0) dots.push(new Dot(random(0,255),0,0)); 
-            if(t==1) dots.push(new Dot(0,random(0,255),0)); 
-            if(t==2) dots.push(new Dot(0,0,random(0,255))); 
+            if(t==0) dots.push(new Dot(255,0,0)); 
+            if(t==1) dots.push(new Dot(0,255,0)); 
+            if(t==2) dots.push(new Dot(0,0,255)); 
             t++;
             
         }
-        for(i =0; i < 90;i++)
+        for(i =0; i < 0;i++)
         {
             dots.push(new Dot(random(0,255),random(0,255),random(0,255)));
         }
@@ -224,7 +207,13 @@
 
     function loop(){
         context.clearRect(0,0,w,h);
-
+        if(mouse.down && dotsCount<config.maxDots)
+        {
+            dots.push(new Dot(random(0,255),random(0,255),random(0,255)));
+            let randomVec = {x: random(-10,10), y: random(-10,10)};
+            dots[dotsCount].pos = {x: mouse.x+randomVec.x, y: mouse.y+randomVec.y};
+            dotsCount++;
+        }
         updateDots();
 
         window.requestAnimationFrame(loop);
