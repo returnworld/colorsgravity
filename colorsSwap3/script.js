@@ -207,6 +207,8 @@
 
     function loop(){
         context.clearRect(0,0,w,h);
+        context.font = "48px serif";
+        context.fillText("Click for create...", 10, 50);
         if(mouse.down && dotsCount<config.maxDots)
         {
             dots.push(new Dot(random(0,255),random(0,255),random(0,255)));
