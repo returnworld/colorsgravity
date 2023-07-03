@@ -1,5 +1,112 @@
 body {
     margin: 0%;
+    position: absolute;
     overflow: hidden;
-    background: rgb(4, 7, 17);
+    background: rgb(4, 7, 17); 
+    z-index: 0;
+    width: 100vw;
+    height: 100vh;
+}
+.canvas{ 
+    position: absolute;
+    z-index: 2;
+    background: none;
+    opacity: 1;
+}
+.wrap {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 1000px;
+    z-index: 1;
+    background: none;
+    background-image: url(bg.png);
+    background-repeat: no-repeat;
+    background-position: 50% 0;
+    background-size: cover;
+    animation-duration: 1s;
+    animation-name: openbg;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-delay: 0s;
+    animation-fill-mode: forwards;
+    opacity: 1;
+}
+
+.menu{
+    position: absolute;
+    opacity: 1;
+    z-index: 4;
+}
+
+@keyframes openbg {
+    from {
+        opacity: 0.03;
+      }
+    to {
+        opacity: 0.08;
+      }
+  }
+
+.btn {
+    position: relative;
+    z-index: 3;
+    text-decoration: none;
+    display: inline-block;
+    width: 140px;
+    height: 45px;
+    line-height: 45px;
+    border-radius: 4px;
+    margin: 10px 0px 0px 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 1px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #212529;
+    border-color: #212529;
+    transition: .2s;
+    opacity: 0.8;
+    border: none; 
+    outline: none;
+  }
+
+.btn:hover {
+    background: #4e0c0c;
+    box-shadow: 0 15px 20px rgba(100, 37, 37, 0.4);
+    color: white;
+    transform: translateY(2px);
+}
+.active{
+    background: #381717;
+    box-shadow: 0 15px 20px rgba(100, 37, 37, 0.4);
+    color: white;
+    transform: translateY(2px);
+}
+
+.change-mode {
+    background: black;
+}
+
+.change-bg {
+    background-image: none;
+}
+.change-mode-pink{
+    background: rgb(255, 75, 105);
+}
+
+.change-light {
+    background: #fff;
+}
+.change-opacity{
+    opacity: 1;
+    animation-name:none;
+}
+.opacity03{
+    opacity: 0.3;
+    animation-name:none;
 }

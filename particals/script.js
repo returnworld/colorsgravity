@@ -130,7 +130,6 @@
             ctx.fillStyle = "rgba(255,255,255,"+textalpha3+")";
             ctx.fillText("                     <3 ღ ❥ ❤ ♥ ❣ ❢ ❦ ❧ ☜♡☞", midX+10, midY+70);
         }
-        console.log(delta);
     }
     function draw()
     {   

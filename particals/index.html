@@ -7,7 +7,59 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas></canvas>
+    <div class="wrap" id="elem">
+    </div>
+    <div class="menu">
+        <button type="button" class="btn" id="Dark">Dark</button>
+        <button type="button" class="btn" id="Light">Light</button>
+        <button type="button" class="btn" id="opacity03">lamp</button>
+        <button type="button" class="btn" id="Off">background</button>
+        
+    </div>
+    <canvas class="canvas"></canvas> 
+    
     <script src="script.js"></script>
+    <script>
+        let isLight =  isOpacity = isDark = isBgOff = false;
+       
+        btn1 = document.getElementById('Dark');
+        btn1.onclick = function() {
+            isDark=!isDark;
+            document.body.classList.toggle('change-mode');
+            if(isDark) btn1.textContent = 'Night';
+            if(!isDark) btn1.textContent = 'Dark';
+        }
+        
+        btn2 = document.getElementById('Light');
+        btn2.onclick = function() {            
+            document.body.classList.toggle('change-light');
+            document.querySelector('.wrap').classList.toggle('change-opacity');
+            btn2.classList.toggle("active");
+            isLight = !isLight;
+            if(isOpacity && isLight){btn4.onclick();}
+        }
+        
+        btn3 = document.getElementById('Off');
+        btn3.onclick = function() {
+            document.querySelector('.wrap').classList.toggle('change-bg');
+            btn3.classList.toggle("active");
+            isBgOff=!isBgOff;
+            
+            if(isBgOff && isOpacity)  {document.querySelector('.wrap').classList.add('change-mode-pink');}
+            else {  document.querySelector('.wrap').classList.remove('change-mode-pink');  }
+        }
+
+        btn4 = document.getElementById('opacity03');
+        btn4.onclick = function() {
+            document.querySelector('.wrap').classList.toggle('opacity03');
+            btn4.classList.toggle("active");
+            isOpacity=!isOpacity;
+            if(isLight && isOpacity){btn2.onclick();}
+            
+            if(isBgOff && isOpacity) {document.querySelector('.wrap').classList.add('change-mode-pink');}
+            else {  document.querySelector('.wrap').classList.remove('change-mode-pink');  }
+        }
+        
+    </script>
 </body>
 </html>
