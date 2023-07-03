@@ -19,6 +19,15 @@
 
     function update()
     {
+        if(mouse.down)
+        {
+            fields[0].position.x = mouse.x;
+            fields[0].position.y = mouse.y;
+            fields[0].isActive = true;
+        }
+        else {
+            fields[0].isActive = false;
+        }
         addNewParticles();
         plotParticles(canvas.width, canvas.height);
     }
@@ -182,17 +191,20 @@
             // запускаем цикл по гравитационным полям
             for (let i = 0; i < fields.length; i++) {
               let field = fields[i];
-          
-              // вычисляем расстояние между частицей и полем
-              let vectorX = field.position.x - this.position.x;
-              let vectorY = field.position.y - this.position.y;
-          
-              // вычисляем силу с помощью МАГИИ и НАУКИ!
-              let force = field.mass / Math.pow(vectorX*vectorX+vectorY*vectorY,1.5);
-          
-              // аккумулируем ускорение в кадре произведением силы на расстояние
-              totalAccelerationX += vectorX * force;
-              totalAccelerationY += vectorY * force;
+                if(field.isActive)
+                {
+                    // вычисляем расстояние между частицей и полем
+                    let vectorX = field.position.x - this.position.x;
+                    let vectorY = field.position.y - this.position.y;
+                
+                    // вычисляем силу с помощью МАГИИ и НАУКИ!
+                    let force = field.mass / Math.pow(vectorX*vectorX+vectorY*vectorY,1.5);
+                
+                    // аккумулируем ускорение в кадре произведением силы на расстояние
+                    totalAccelerationX += vectorX * force;
+                    totalAccelerationY += vectorY * force;
+                }
+              
             }
           
             // обновляем ускорение частицы
@@ -230,6 +242,7 @@
         {
             this.position = point;
             this.setMass(mass);
+            this.isActive = true;
         }
 
         setMass(mass)
@@ -256,13 +269,15 @@
         h = canvas.height = innerHeight;
         midX = w / 2;
         midY = h / 2;
+        mouse = {x: w/2, y: h/2, down: false}
+
         emitters = [new Emitter(new Vector2(midX - 150, midY), Vector2.prototype.fromAngle(6, 2))];
         fields = [
+            new Field(new Vector2(mouse.x,mouse.y), -50),
             new Field(new Vector2(midX - 100, midY + 20), 160),
             new Field(new Vector2(midX - 300, midY + 20), 100),
             new Field(new Vector2(midX - 190, midY + 30), -35)
-        ];
-        mouse = {x: w/2, y: h/2, down: false}
+        ];       
     }
 
     function loop(){
