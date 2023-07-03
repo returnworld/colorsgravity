@@ -12,8 +12,10 @@
     let fields = [];
     let objectSize = 0;
     let particleSize = 2;
-    var midX = canvas.width / 2;
-    var midY = canvas.height / 2; 
+    let midX = canvas.width / 2;
+    let midY = canvas.height / 2; 
+    let textalpha1 = textalpha2 = textalpha3 = 0;
+    let date = new Date();
 
     function update()
     {
@@ -29,10 +31,10 @@
         if (particles.length > maxParticles) return;
 
         // запускаем цикл по каждому излучателю
-        for (var i = 0; i < emitters.length; i++) {
+        for (let i = 0; i < emitters.length; i++) {
 
             // согласно emissionRate, генерируем частицы
-            for (var j = 0; j < emissionRate; j++) {
+            for (let j = 0; j < emissionRate; j++) {
             particles.push(emitters[i].emitParticle());
             }
 
@@ -40,14 +42,18 @@
     }
     function plotParticles(boundsX, boundsY) {
         // Новый массив для частиц внутри холста
-        var currentParticles = [];
+        let currentParticles = [];
+        let newtime = new Date();
       
-        for (var i = 0; i < particles.length; i++) {
-          var particle = particles[i];
-          var pos = particle.position;
+        for (let i = 0; i < particles.length; i++) {
+          let particle = particles[i];
+          let pos = particle.position;
+          let deltatime = newtime-particles[i].time;
       
           // Если частица за пределами, то пропускаем её и переходим к следующей
           if (pos.x < 0 || pos.x > boundsX || pos.y < 0 || pos.y > boundsY) continue;
+          if (particles[i].alpha <= 0) continue;
+          if (deltatime >= 20000) continue;
       
           // Перемещение частицы
           particle.move();
@@ -68,20 +74,58 @@
         ctx.fill();
     }
     function drawParticles() {
-        // Задаём цвет частиц
-        ctx.fillStyle = 'rgb(255,0,20)';
+        let newtime = new Date();
+        
 
         // Запускаем цикл, который отображает частицы
-        for (var i = 0; i < particles.length; i++) {
-            var position = particles[i].position;
+        for (let i = 0; i < particles.length; i++) {
+            let position = particles[i].position;
+            let ps = particleSize;
+            let deltatime = newtime-particles[i].time;
 
+            if(deltatime > 16000) {
+                particles[i].alpha-=0.003;//(particles[i].velocity.x < 0.1 || particles[i].velocity.y < 0.1)
+                particles[i].size += 0.01;
+            }
+            // Задаём цвет частиц
+            ctx.fillStyle = 'rgba('+(255-deltatime/100)+',0,'+deltatime/100+','+particles[i].alpha+')';
             // Рисуем квадрат определенных размеров с заданными координатами
-            ctx.fillRect(position.x, position.y, particleSize, particleSize);
+            ctx.fillRect(position.x, position.y, particles[i].size, particles[i].size);
         }
     }
-
-    function draw()
+    function drawhellotext()
     {
+        let newdate = new Date();
+        let delta = newdate-date;
+        if(delta>=2000)
+        {
+            if(textalpha1 <=1) textalpha1 +=0.002;
+            
+            ctx.font = "48px comic sans ms";
+            ctx.fillStyle = "rgba(255,255,255,"+textalpha1+")";
+            ctx.fillText("Ты", midX-470, midY+70);
+        }
+        if(delta>=4000)
+        {
+            if(textalpha2 <=1) textalpha2 +=0.002;
+            
+            ctx.font = "48px cursive";
+            ctx.fillStyle = "rgba(255,255,255,"+textalpha2+")";
+            ctx.fillText("моя...   ", midX+10, midY+70);
+        }
+        if(delta>=7500)
+        {
+            if(textalpha3 <=1) textalpha3 +=0.003;
+            
+            ctx.font = "48px fantasy";
+            ctx.fillStyle = "rgba(255,255,255,"+textalpha3+")";
+            ctx.fillText("                     <3 ღ ❥ ❤ ♥ ❣ ❢ ❦ ❧ ☜♡☞", midX+10, midY+70);
+        }
+        console.log(delta);
+    }
+    function draw()
+    {   
+        drawhellotext();
         drawParticles();
         fields.forEach(drawCircle);
         emitters.forEach(drawCircle);
@@ -118,6 +162,9 @@
             this.position = point || new Vector2(0, 0);
             this.velocity = velocity || new Vector2(0, 0);
             this.acceleration = acceleration || new Vector2(0, 0);
+            this.time = new Date();
+            this.size = particleSize;
+            this.alpha = 0.9;
         }
         move()
         {
@@ -129,19 +176,19 @@
         }
         submitToFields(fields) {
             // стартовое ускорение в кадре
-            var totalAccelerationX = 0;
-            var totalAccelerationY = 0;
+            let totalAccelerationX = 0;
+            let totalAccelerationY = 0;
           
             // запускаем цикл по гравитационным полям
-            for (var i = 0; i < fields.length; i++) {
-              var field = fields[i];
+            for (let i = 0; i < fields.length; i++) {
+              let field = fields[i];
           
               // вычисляем расстояние между частицей и полем
-              var vectorX = field.position.x - this.position.x;
-              var vectorY = field.position.y - this.position.y;
+              let vectorX = field.position.x - this.position.x;
+              let vectorY = field.position.y - this.position.y;
           
               // вычисляем силу с помощью МАГИИ и НАУКИ!
-              var force = field.mass / Math.pow(vectorX*vectorX+vectorY*vectorY,1.5);
+              let force = field.mass / Math.pow(vectorX*vectorX+vectorY*vectorY,1.5);
           
               // аккумулируем ускорение в кадре произведением силы на расстояние
               totalAccelerationX += vectorX * force;
@@ -163,16 +210,16 @@
         emitParticle()
         {
             // Использование случайного угла для формирования потока частиц позволит нам получить своего рода «спрей»
-            var angle = this.velocity.getAngle() + this.spread - (Math.random() * this.spread * 2);
+            let angle = this.velocity.getAngle() + this.spread - (Math.random() * this.spread * 2);
 
             // Магнитуда скорости излучателя
-            var magnitude = this.velocity.getMagnitude();
+            let magnitude = this.velocity.getMagnitude();
 
             // Координаты излучателя
-            var position = new Vector2(this.position.x, this.position.y);
+            let position = new Vector2(this.position.x, this.position.y);
 
             // Обновлённая скорость, полученная из вычисленного угла и магнитуды
-            var velocity = Vector2.prototype.fromAngle(angle, magnitude);
+            let velocity = Vector2.prototype.fromAngle(angle, magnitude);
 
             // Возвращает нашу Частицу!
             return new Particle(position,velocity);
